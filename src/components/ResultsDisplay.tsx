@@ -2,6 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Download, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   RadarChart,
   PolarGrid,
@@ -38,6 +40,61 @@ interface ResultsDisplayProps {
 }
 
 export const ResultsDisplay = ({ results, onReset }: ResultsDisplayProps) => {
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    
+    // Title
+    doc.setFontSize(20);
+    doc.setTextColor(34, 139, 34);
+    doc.text("Seed Quality Analysis Report", 105, 20, { align: "center" });
+    
+    // Date
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 105, 28, { align: "center" });
+    
+    let yPosition = 40;
+    
+    results.forEach((result, index) => {
+      // Check if we need a new page
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      
+      // Seed header
+      doc.setFontSize(14);
+      doc.setTextColor(0);
+      doc.text(`Seed ${index + 1}: ${result.fileName}`, 14, yPosition);
+      yPosition += 8;
+      
+      // Quality info
+      doc.setFontSize(11);
+      doc.text(`Quality: ${result.quality} | Grade: ${result.grade} | Score: ${result.score}/100`, 14, yPosition);
+      yPosition += 10;
+      
+      // Parameters table
+      autoTable(doc, {
+        startY: yPosition,
+        head: [['Parameter', 'Value', 'Status', 'Interpretation']],
+        body: result.parameters.map(param => [
+          param.name,
+          `${param.value}%`,
+          param.status,
+          param.interpretation
+        ]),
+        theme: 'grid',
+        headStyles: { fillColor: [34, 139, 34] },
+        margin: { left: 14, right: 14 },
+      });
+      
+      yPosition = (doc as any).lastAutoTable.finalY + 15;
+    });
+    
+    // Save the PDF
+    doc.save(`seed-quality-report-${new Date().getTime()}.pdf`);
+  };
+
   const getQualityColor = (quality: string) => {
     switch (quality) {
       case "High": return "bg-success text-success-foreground";
@@ -74,7 +131,7 @@ export const ResultsDisplay = ({ results, onReset }: ResultsDisplayProps) => {
             <Button variant="outline" onClick={onReset}>
               Analyze More Seeds
             </Button>
-            <Button className="bg-gradient-accent">
+            <Button className="bg-gradient-accent" onClick={generatePDF}>
               <Download className="mr-2 h-4 w-4" />
               Download Report
             </Button>
