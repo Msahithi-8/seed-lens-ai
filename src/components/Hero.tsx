@@ -1,6 +1,5 @@
 import { Sprout, Sparkles, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Scene3D } from "./Scene3D";
 
 interface HeroProps {
   onGetStarted: () => void;
@@ -9,8 +8,12 @@ interface HeroProps {
 export const Hero = ({ onGetStarted }: HeroProps) => {
   return (
     <section className="relative py-20 px-4 bg-gradient-hero overflow-hidden">
-      <Scene3D />
       <div className="absolute inset-0 bg-gradient-mesh opacity-50" />
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-float [animation-delay:2s]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-success/10 rounded-full blur-3xl animate-float [animation-delay:4s]" />
+      </div>
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center space-y-6 animate-fade-in">
           <div className="inline-flex items-center gap-2 bg-secondary/50 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium shadow-glow animate-scale-pulse">
