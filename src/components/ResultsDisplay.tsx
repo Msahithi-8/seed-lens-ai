@@ -123,15 +123,18 @@ export const ResultsDisplay = ({ results, onReset }: ResultsDisplayProps) => {
   };
 
   return (
-    <section className="py-12 px-4">
+    <section className="py-12 px-4 animate-fade-in">
       <div className="container mx-auto max-w-7xl">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold">Analysis Results</h2>
-          <div className="flex gap-4">
-            <Button variant="outline" onClick={onReset}>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+          <div>
+            <h2 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">Analysis Results</h2>
+            <p className="text-muted-foreground mt-1">Detailed quality assessment of your seeds</p>
+          </div>
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={onReset} className="hover:scale-105 transition-transform border-2">
               Analyze More Seeds
             </Button>
-            <Button className="bg-gradient-accent" onClick={generatePDF}>
+            <Button className="bg-gradient-accent hover:scale-105 hover:shadow-glow-accent transition-all" onClick={generatePDF}>
               <Download className="mr-2 h-4 w-4" />
               Download Report
             </Button>
@@ -140,24 +143,27 @@ export const ResultsDisplay = ({ results, onReset }: ResultsDisplayProps) => {
 
         <div className="space-y-8">
           {results.map((result, index) => (
-            <Card key={index} className="p-6 shadow-elevated">
+            <Card key={index} className="p-8 shadow-elevated hover:shadow-glow transition-all duration-500 border-2 group animate-slide-up">
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Image and Basic Info */}
-                <div className="space-y-4">
-                  <img
-                    src={result.imageUrl}
-                    alt={result.fileName}
-                    className="w-full h-64 object-cover rounded-lg"
-                  />
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">{result.fileName}</p>
-                    <div className="flex items-center gap-4">
-                      <Badge className={getQualityColor(result.quality)}>
+                <div className="space-y-6">
+                  <div className="relative overflow-hidden rounded-xl border-2 border-border group-hover:border-primary transition-all duration-300">
+                    <img
+                      src={result.imageUrl}
+                      alt={result.fileName}
+                      className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground font-medium">{result.fileName}</p>
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <Badge className={`${getQualityColor(result.quality)} px-4 py-2 text-sm font-semibold`}>
                         {result.quality} Quality
                       </Badge>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-lg">
                         <span className="text-sm font-medium">Grade:</span>
-                        <span className={`text-2xl font-bold ${getGradeColor(result.grade)}`}>
+                        <span className={`text-3xl font-bold ${getGradeColor(result.grade)}`}>
                           {result.grade}
                         </span>
                       </div>
@@ -166,35 +172,43 @@ export const ResultsDisplay = ({ results, onReset }: ResultsDisplayProps) => {
                 </div>
 
                 {/* Quality Score Chart */}
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground mb-2">Overall Quality Score</p>
-                    <div className="relative inline-flex items-center justify-center">
-                      <svg className="transform -rotate-90 w-32 h-32">
+                    <p className="text-sm font-semibold text-muted-foreground mb-4">Overall Quality Score</p>
+                    <div className="relative inline-flex items-center justify-center mb-6">
+                      <div className="absolute inset-0 bg-gradient-primary opacity-10 rounded-full blur-2xl animate-pulse-glow" />
+                      <svg className="transform -rotate-90 w-40 h-40">
                         <circle
-                          cx="64"
-                          cy="64"
-                          r="56"
+                          cx="80"
+                          cy="80"
+                          r="70"
                           stroke="currentColor"
-                          strokeWidth="8"
+                          strokeWidth="12"
                           fill="none"
-                          className="text-muted"
+                          className="text-muted/30"
                         />
                         <circle
-                          cx="64"
-                          cy="64"
-                          r="56"
-                          stroke="currentColor"
-                          strokeWidth="8"
+                          cx="80"
+                          cy="80"
+                          r="70"
+                          stroke="url(#gradient)"
+                          strokeWidth="12"
                           fill="none"
-                          strokeDasharray={`${2 * Math.PI * 56}`}
-                          strokeDashoffset={`${2 * Math.PI * 56 * (1 - result.score / 100)}`}
-                          className="text-primary transition-all duration-1000"
+                          strokeDasharray={`${2 * Math.PI * 70}`}
+                          strokeDashoffset={`${2 * Math.PI * 70 * (1 - result.score / 100)}`}
+                          className="transition-all duration-1000 drop-shadow-glow"
+                          strokeLinecap="round"
                         />
+                        <defs>
+                          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="hsl(142 76% 46%)" />
+                            <stop offset="100%" stopColor="hsl(142 86% 56%)" />
+                          </linearGradient>
+                        </defs>
                       </svg>
                       <div className="absolute flex flex-col items-center">
-                        <span className="text-3xl font-bold">{result.score}</span>
-                        <span className="text-xs text-muted-foreground">/ 100</span>
+                        <span className="text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">{result.score}</span>
+                        <span className="text-xs text-muted-foreground font-medium">/ 100</span>
                       </div>
                     </div>
                   </div>
@@ -220,38 +234,38 @@ export const ResultsDisplay = ({ results, onReset }: ResultsDisplayProps) => {
               </div>
 
               {/* Parameters Table */}
-              <div className="mt-8">
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
+              <div className="mt-10">
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <TrendingUp className="w-6 h-6 text-primary" />
                   Quality Parameters
                 </h3>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto rounded-xl border-2 border-border">
                   <table className="w-full">
-                    <thead className="bg-muted">
+                    <thead className="bg-gradient-to-r from-muted to-muted/50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-sm font-medium">Parameter</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium">Value</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium">Interpretation</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold">Parameter</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold">Value</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold">Status</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold">Interpretation</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
                       {result.parameters.map((param, i) => (
-                        <tr key={i} className="hover:bg-muted/50 transition-colors">
-                          <td className="px-4 py-3 font-medium">{param.name}</td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
+                        <tr key={i} className="hover:bg-muted/30 transition-colors group">
+                          <td className="px-6 py-4 font-semibold">{param.name}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1 bg-muted rounded-full h-3 overflow-hidden">
                                 <div
-                                  className="h-full bg-primary transition-all"
+                                  className="h-full bg-gradient-primary transition-all duration-500 group-hover:shadow-glow"
                                   style={{ width: `${param.value}%` }}
                                 />
                               </div>
-                              <span className="text-sm font-medium">{param.value}%</span>
+                              <span className="text-sm font-bold min-w-[3rem]">{param.value}%</span>
                             </div>
                           </td>
-                          <td className="px-4 py-3">{getStatusIcon(param.status)}</td>
-                          <td className="px-4 py-3 text-sm text-muted-foreground">
+                          <td className="px-6 py-4">{getStatusIcon(param.status)}</td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">
                             {param.interpretation}
                           </td>
                         </tr>
@@ -266,8 +280,11 @@ export const ResultsDisplay = ({ results, onReset }: ResultsDisplayProps) => {
 
         {/* Comparison Chart for Multiple Seeds */}
         {results.length > 1 && (
-          <Card className="p-6 mt-8 shadow-elevated">
-            <h3 className="text-xl font-semibold mb-6">Quality Score Comparison</h3>
+          <Card className="p-8 mt-10 shadow-elevated hover:shadow-glow transition-all duration-300 border-2">
+            <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
+              <TrendingUp className="w-6 h-6 text-primary" />
+              Quality Score Comparison
+            </h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={results.map(r => ({ name: r.fileName, score: r.score }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
